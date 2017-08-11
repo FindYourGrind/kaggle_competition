@@ -12,8 +12,8 @@ from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import Imputer
 
-titanic_train_data = pd.read_csv(r"Titanic/data/train.csv")
-titanic_test_data = pd.read_csv(r"Titanic/data/test.csv")
+titanic_train_data = pd.read_csv(r"data/train.csv")
+titanic_test_data = pd.read_csv(r"data/test.csv")
 
 def preprocessing(data):
     processed_data = data
@@ -53,7 +53,7 @@ def preprocessing(data):
             data = data.drop(column, axis=1)
         return data
 
-    processed_data = dummy_data(processed_data, ["Pclass"])
+    #processed_data = dummy_data(processed_data, ["Pclass"])
 
     def sex_to_int(data):
         le = LabelEncoder()
@@ -73,7 +73,7 @@ def preprocessing(data):
     return processed_data
 
 
-def split_valid_test_data(data, fraction=(1 - 0.9)):
+def split_valid_test_data(data, fraction=(1 - 0.5)):
     data_y = data["Survived"]
     lb = LabelBinarizer()
     data_y = lb.fit_transform(data_y)
@@ -85,11 +85,18 @@ def split_valid_test_data(data, fraction=(1 - 0.9)):
 
 processed_train_data = titanic_train_data[['Survived', 'Name', 'Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked']]
 input_x, input_y, output_x, output_y = split_valid_test_data(preprocessing(processed_train_data))
+output_x = output_x.reshape((output_x.size,))
+
+titanic_forestclass_model = RandomForestClassifier(n_estimators=100)
+titanic_forestclass_model.fit(input_x, output_x)
+prediction = titanic_forestclass_model.predict(input_y)
+print('RandomForestClassifier accuracy: ', round(titanic_forestclass_model.score(input_y, output_y) * 100, 2))
+print('RandomForestClassifier error: ', mean_absolute_error(output_y, prediction))
+print('\n')
+
 
 processed_test_data = titanic_test_data[['Name', 'Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked']]
 input_y = preprocessing(processed_test_data)
-
-output_x = output_x.reshape((output_x.size,));
 
 ##
 titanic_tree_model = DecisionTreeRegressor()
@@ -107,7 +114,7 @@ prediction = titanic_logreg_model.predict(input_y)
 
 evaluation = titanic_test_data[['PassengerId']].copy()
 evaluation["Survived"] = prediction.astype(int)
-evaluation.to_csv("./Titanic/prediction/titanic_evaluation_submission_logistic_regression.csv", index=False)
+evaluation.to_csv(r"prediction/titanic_evaluation_submission_logistic_regression.csv", index=False)
 
 # print('LogisticRegression accuracy: ', round(titanic_logreg_model.score(input_y, output_y) * 100, 2))
 # print('LogisticRegression error: ', mean_absolute_error(output_y, prediction))
@@ -120,7 +127,7 @@ prediction = titanic_svc_model.predict(input_y)
 
 evaluation = titanic_test_data[['PassengerId']].copy()
 evaluation["Survived"] = prediction.astype(int)
-evaluation.to_csv("./Titanic/prediction/titanic_evaluation_submission_svc.csv", index=False)
+evaluation.to_csv(r"prediction/titanic_evaluation_submission_svc.csv", index=False)
 
 # print('SVC accuracy: ', round(titanic_svc_model.score(input_y, output_y) * 100, 2))
 # print('SVC error: ', mean_absolute_error(output_y, prediction))
@@ -133,7 +140,7 @@ prediction = titanic_knn_model.predict(input_y)
 
 evaluation = titanic_test_data[['PassengerId']].copy()
 evaluation["Survived"] = prediction.astype(int)
-evaluation.to_csv("./Titanic/prediction/titanic_evaluation_submission_knn.csv", index=False)
+evaluation.to_csv(r"prediction/titanic_evaluation_submission_knn.csv", index=False)
 
 # print('K-NN accuracy: ', round(titanic_knn_model.score(input_y, output_y) * 100, 2))
 # print('K-NN error: ', mean_absolute_error(output_y, prediction))
@@ -141,14 +148,19 @@ evaluation.to_csv("./Titanic/prediction/titanic_evaluation_submission_knn.csv", 
 
 
 ##
-titanic_forestclass_model = RandomForestClassifier(n_estimators=100)
-titanic_forestclass_model.fit(input_x, output_x)
+# titanic_forestclass_model = RandomForestClassifier(n_estimators=100)
+# titanic_forestclass_model.fit(input_x, output_x)
 prediction = titanic_forestclass_model.predict(input_y)
 
 #print('RandomForestClassifier accuracy: ', round(titanic_forestclass_model.score(input_y, output_y) * 100, 2))
 #print('RandomForestClassifier error: ', mean_absolute_error(output_y, prediction))
 #print('\n')
 
+evaluation = titanic_test_data[['PassengerId']].copy()
+evaluation["Survived"] = prediction.astype(int)
+evaluation.to_csv(r"prediction/titanic_evaluation_submission_random_forest_classifier.csv", index=False)
+print('\n')
+print('printed')
 '''
 # Tree
 processed_train_data = titanic_train_data[['Survived', 'Pclass', 'Sex', 'Age', 'SibSp']]
