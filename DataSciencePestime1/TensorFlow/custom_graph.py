@@ -28,11 +28,13 @@ optimizer = tf.train.GradientDescentOptimizer(0.5).minimize(loss) # метод �
 
 with tf.Session() as session:
     tf.global_variables_initializer().run()
+
     for i in range(samples//packetSize):
         feed_dict={tf_data_x: data_x[i*packetSize:(i+1)*packetSize], tf_data_y: data_y[i*packetSize:(i+1)*packetSize]}
         _, l = session.run([optimizer, loss], feed_dict=feed_dict) # запускаем оптимизатор и вычисляем "потери"
         print("ошибка: %f" % (l, ))
         print("a = %f, b = %f" % (weight.eval(), bias.eval()))
+
     plt.plot(data_x, list(map(lambda x: weight.eval()*x+bias.eval(), data_x)), data_x, data_y, 'ro')
 
 plt.show()
