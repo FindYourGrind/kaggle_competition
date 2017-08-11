@@ -8,5 +8,5 @@ Within categorical features are the values nominal, ordinal, ratio, or interval 
 Among other things this helps us select the appropriate plots for visualization.
 Categorical: Survived, Sex, and Embarked. Ordinal: Pclass.
 '''
-print('Categorical: ', titanic_data['Survived', 'Sex', 'Embarked'])
-print('Ordinal: ', titanic_data['Pclass'])
+print('Categorical: ', titanic_data[['Survived', 'Sex', 'Embarked']])
+print('Ordinal: ', titanic_data[['Pclass']])

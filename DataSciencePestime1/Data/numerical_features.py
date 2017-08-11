@@ -8,5 +8,5 @@ Within numerical features are the values discrete, continuous, or timeseries bas
 Among other things this helps us select the appropriate plots for visualization.
 Continous: Age, Fare. Discrete: SibSp, Parch.
 '''
-print('Continous: ', titanic_data['Age', 'Fare'])
-print('Discrete: ', titanic_data['SibSp', 'Parch'])
+print('Continous: ', titanic_data[['Age', 'Fare']])
+print('Discrete: ', titanic_data[['SibSp', 'Parch']])
