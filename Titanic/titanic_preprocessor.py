@@ -49,7 +49,7 @@ def preprocessing(data):
             data = data.drop(column, axis=1)
         return data
 
-    #processed_data = dummy_data(processed_data, ["Pclass"])
+    processed_data = dummy_data(processed_data, ["Pclass"])
 
     def sex_to_int(data):
         le = LabelEncoder()

@@ -15,6 +15,10 @@ from sklearn.preprocessing import Imputer
 titanic_train_data = pd.read_csv(r"data/train.csv")
 titanic_test_data = pd.read_csv(r"data/test.csv")
 
+titanic_train_data.loc[:, 'SecondName'] = titanic_train_data.Name.str.extract('^([A-Za-z ]+),', expand=False)
+print(titanic_train_data[['SecondName', 'Survived']].groupby(['SecondName'], as_index=False).agg(['mean', 'count']))
+titanic_train_data = titanic_train_data.drop(['SecondName'], axis=1)
+
 def preprocessing(data):
     processed_data = data
 
@@ -43,6 +47,16 @@ def preprocessing(data):
     processed_data.loc[processed_data['FamilySize'] == 1, 'IsAlone'] = 1
     processed_data = processed_data.drop(['Parch', 'SibSp', 'FamilySize'], axis=1)
 
+    processed_data['AgeBand'] = pd.cut(processed_data['Age'], 5)
+
+    processed_data.loc[ processed_data['Age'] <= 16, 'Age'] = 0
+    processed_data.loc[(processed_data['Age'] > 16) & (processed_data['Age'] <= 32), 'Age'] = 1
+    processed_data.loc[(processed_data['Age'] > 32) & (processed_data['Age'] <= 48), 'Age'] = 2
+    processed_data.loc[(processed_data['Age'] > 48) & (processed_data['Age'] <= 64), 'Age'] = 3
+    processed_data.loc[ processed_data['Age'] > 64, 'Age']
+
+    processed_data = processed_data.drop(['AgeBand'], axis=1)
+
     freq_port = processed_data.Embarked.dropna().mode()[0]
     processed_data.loc[:, 'Embarked'] = processed_data['Embarked'].fillna(freq_port)
     processed_data.loc[:, 'Embarked'] = processed_data['Embarked'].map({'S': 0, 'C': 1, 'Q': 2}).astype(int)
@@ -53,7 +67,7 @@ def preprocessing(data):
             data = data.drop(column, axis=1)
         return data
 
-    #processed_data = dummy_data(processed_data, ["Pclass"])
+    processed_data = dummy_data(processed_data, ["Pclass"])
 
     def sex_to_int(data):
         le = LabelEncoder()
@@ -73,7 +87,7 @@ def preprocessing(data):
     return processed_data
 
 
-def split_valid_test_data(data, fraction=(1 - 0.5)):
+def split_valid_test_data(data, fraction=(1 - 0.85)):
     data_y = data["Survived"]
     lb = LabelBinarizer()
     data_y = lb.fit_transform(data_y)
@@ -87,8 +101,15 @@ processed_train_data = titanic_train_data[['Survived', 'Name', 'Pclass', 'Sex', 
 input_x, input_y, output_x, output_y = split_valid_test_data(preprocessing(processed_train_data))
 output_x = output_x.reshape((output_x.size,))
 
-titanic_forestclass_model = RandomForestClassifier(n_estimators=100)
+titanic_forestclass_model = RandomForestClassifier(n_estimators=100, max_leaf_nodes=1000, random_state=0)
+
+
+input_x = np.concatenate((input_x, input_x))
+output_x = np.concatenate((output_x, output_x))
+
 titanic_forestclass_model.fit(input_x, output_x)
+
+
 prediction = titanic_forestclass_model.predict(input_y)
 print('RandomForestClassifier accuracy: ', round(titanic_forestclass_model.score(input_y, output_y) * 100, 2))
 print('RandomForestClassifier error: ', mean_absolute_error(output_y, prediction))
@@ -99,48 +120,49 @@ processed_test_data = titanic_test_data[['Name', 'Pclass', 'Sex', 'Age', 'SibSp'
 input_y = preprocessing(processed_test_data)
 
 ##
-titanic_tree_model = DecisionTreeRegressor()
-titanic_tree_model.fit(input_x, output_x)
-prediction = titanic_tree_model.predict(input_y)
+# titanic_tree_model = DecisionTreeRegressor()
+# titanic_tree_model.fit(input_x, output_x)
+# prediction = titanic_tree_model.predict(input_y)
 
-# print('DecisionTreeRegressor accuracy: ', round(titanic_tree_model.score(input_y, output_y) * 100, 2))
+
+#print('DecisionTreeRegressor accuracy: ', round(titanic_tree_model.score(input_y, output_y) * 100, 2))
 # print('DecisionTreeRegressor error: ', mean_absolute_error(output_y, prediction))
 # print('\n')
 
 ##
-titanic_logreg_model = LogisticRegression()
-titanic_logreg_model.fit(input_x, output_x)
-prediction = titanic_logreg_model.predict(input_y)
-
-evaluation = titanic_test_data[['PassengerId']].copy()
-evaluation["Survived"] = prediction.astype(int)
-evaluation.to_csv(r"prediction/titanic_evaluation_submission_logistic_regression.csv", index=False)
+# titanic_logreg_model = LogisticRegression()
+# titanic_logreg_model.fit(input_x, output_x)
+# prediction = titanic_logreg_model.predict(input_y)
+#
+# evaluation = titanic_test_data[['PassengerId']].copy()
+# evaluation["Survived"] = prediction.astype(int)
+# evaluation.to_csv(r"prediction/titanic_evaluation_submission_logistic_regression.csv", index=False)
 
 # print('LogisticRegression accuracy: ', round(titanic_logreg_model.score(input_y, output_y) * 100, 2))
 # print('LogisticRegression error: ', mean_absolute_error(output_y, prediction))
 # print('\n')
 
 ##
-titanic_svc_model = SVC()
-titanic_svc_model.fit(input_x, output_x)
-prediction = titanic_svc_model.predict(input_y)
-
-evaluation = titanic_test_data[['PassengerId']].copy()
-evaluation["Survived"] = prediction.astype(int)
-evaluation.to_csv(r"prediction/titanic_evaluation_submission_svc.csv", index=False)
+# titanic_svc_model = SVC()
+# titanic_svc_model.fit(input_x, output_x)
+# prediction = titanic_svc_model.predict(input_y)
+#
+# evaluation = titanic_test_data[['PassengerId']].copy()
+# evaluation["Survived"] = prediction.astype(int)
+# evaluation.to_csv(r"prediction/titanic_evaluation_submission_svc.csv", index=False)
 
 # print('SVC accuracy: ', round(titanic_svc_model.score(input_y, output_y) * 100, 2))
 # print('SVC error: ', mean_absolute_error(output_y, prediction))
 # print('\n')
 
 ##
-titanic_knn_model = KNeighborsClassifier(n_neighbors=3)
-titanic_knn_model.fit(input_x, output_x)
-prediction = titanic_knn_model.predict(input_y)
-
-evaluation = titanic_test_data[['PassengerId']].copy()
-evaluation["Survived"] = prediction.astype(int)
-evaluation.to_csv(r"prediction/titanic_evaluation_submission_knn.csv", index=False)
+# titanic_knn_model = KNeighborsClassifier(n_neighbors=3)
+# titanic_knn_model.fit(input_x, output_x)
+# prediction = titanic_knn_model.predict(input_y)
+#
+# evaluation = titanic_test_data[['PassengerId']].copy()
+# evaluation["Survived"] = prediction.astype(int)
+# evaluation.to_csv(r"prediction/titanic_evaluation_submission_knn.csv", index=False)
 
 # print('K-NN accuracy: ', round(titanic_knn_model.score(input_y, output_y) * 100, 2))
 # print('K-NN error: ', mean_absolute_error(output_y, prediction))
@@ -152,12 +174,13 @@ evaluation.to_csv(r"prediction/titanic_evaluation_submission_knn.csv", index=Fal
 # titanic_forestclass_model.fit(input_x, output_x)
 prediction = titanic_forestclass_model.predict(input_y)
 
+evaluation = titanic_test_data[['PassengerId']].copy()
+evaluation["Survived"] = prediction.astype(int)
+
 #print('RandomForestClassifier accuracy: ', round(titanic_forestclass_model.score(input_y, output_y) * 100, 2))
 #print('RandomForestClassifier error: ', mean_absolute_error(output_y, prediction))
 #print('\n')
 
-evaluation = titanic_test_data[['PassengerId']].copy()
-evaluation["Survived"] = prediction.astype(int)
 evaluation.to_csv(r"prediction/titanic_evaluation_submission_random_forest_classifier.csv", index=False)
 print('\n')
 print('printed')
