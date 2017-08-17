@@ -1,9 +1,10 @@
 import age_prediction as ap
 import titanic_preprocessor as tp
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
+import numpy as np
 
 # read data
 titanic_train_data = pd.read_csv(r"data/train.csv")
@@ -11,6 +12,7 @@ titanic_test_data = pd.read_csv(r"data/test.csv")
 
 # correct age
 titanic_train_data = ap.correct_age(titanic_train_data)
+#titanic_train_data.Age.dropna(axis=0)
 titanic_test_data = ap.correct_age(titanic_test_data)
 
 # preprocess data
@@ -18,17 +20,25 @@ titanic_train_data = tp.preprocessing(titanic_train_data)
 titanic_test_data = tp.preprocessing(titanic_test_data)
 
 # split train data
-train_x, test_x, train_y, test_y = train_test_split(titanic_train_data.drop(["Survived"], axis=1), titanic_train_data["Survived"],  test_size=0.2)
 
-titanic_logreg_model = LogisticRegression()
-titanic_logreg_model.fit(train_x, train_y)
-prediction = titanic_logreg_model.predict(test_x)
+predictions = np.zeros(titanic_test_data.shape[0], np.uint32)
 
-print('LogisticRegression accuracy: ', round(titanic_logreg_model.score(test_x, test_y) * 100, 2))
-print('LogisticRegression error: ', mean_absolute_error(test_y, prediction))
-print('\n')
+for i in range(1000):
+    train_x, test_x, train_y, test_y = train_test_split(titanic_train_data.drop(["Survived"], axis=1),
+                                                        titanic_train_data["Survived"], test_size=0.1 + (i / 2000))
 
-prediction = titanic_logreg_model.predict(titanic_test_data)
+    titanic_logreg_model = LogisticRegression()
+    titanic_logreg_model.fit(train_x, train_y)
+    prediction = titanic_logreg_model.predict(test_x)
+
+    print('LogisticRegression accuracy: ', round(titanic_logreg_model.score(test_x, test_y) * 100, 2))
+    print('LogisticRegression error: ', mean_absolute_error(test_y, prediction))
+    print('\n')
+
+    prediction = titanic_logreg_model.predict(titanic_test_data)
+    predictions = np.add(predictions, prediction)
+
+prediction = np.asarray(list(map(lambda x: 1 if x > 700 else 0, predictions)))
 
 evaluation = titanic_test_data[['PassengerId']].copy()
 evaluation["Survived"] = prediction.astype(int)
