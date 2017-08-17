@@ -2,9 +2,7 @@ import titanic_preprocessor as preproc
 import numpy as np
 import tensorflow as tf
 
-train_X, test_X, train_Y, test_Y = preproc.get_train_data(0.15)
-
-#classsplitter = lambda t: [0, 1] if t else [1, 0]
+train_X, test_X, train_Y, test_Y = preproc.get_train_data(0.2)
 
 train_Y_new = np.ndarray((train_Y.shape[0], 2))
 test_Y_new = np.ndarray((test_Y.shape[0], 2))
@@ -29,11 +27,10 @@ Y = tf.placeholder("float", [None, num_classes])
 W = tf.Variable(tf.zeros([num_features, num_classes]))
 B = tf.Variable(tf.zeros([num_classes]))
 
-pY = tf.nn.softmax(tf.matmul(X, W) + B)
+pY = tf.nn.softplus(tf.matmul(X, W) + B)
 
 cost_fn = -tf.reduce_sum(Y * tf.log(pY))
 
-#opt = tf.train.GradientDescentOptimizer(0.01).minimize(cost_fn)
 opt = tf.train.AdamOptimizer(0.01).minimize(cost_fn)
 
 with tf.Session() as sess:

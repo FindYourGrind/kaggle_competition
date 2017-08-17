@@ -12,9 +12,15 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression, Perceptron, SGDClassifier
 from sklearn.preprocessing import Imputer
+import age_prediction as ap
 
 titanic_train_data = pd.read_csv(r"data/train.csv")
 titanic_test_data = pd.read_csv(r"data/test.csv")
+
+titanic_train_data = ap.correct_age(titanic_train_data)
+titanic_test_data = ap.correct_age(titanic_test_data)
+
+print(titanic_train_data)
 
 def preprocessing(data):
     processed_data = data
@@ -25,7 +31,7 @@ def preprocessing(data):
             data.loc[:, column] = imputer.fit_transform(data[column].values.reshape(-1, 1))
         return data
 
-    processed_data = nan_padding(processed_data, ['Pclass', 'Age', 'SibSp', 'Parch', 'Fare'])
+    processed_data = nan_padding(processed_data, ['Pclass', 'SibSp', 'Parch', 'Fare'])
 
     processed_data.loc[:, 'Title'] = processed_data.Name.str.extract(' ([A-Za-z]+)\.', expand=False)
     pd.crosstab(processed_data['Title'], processed_data['Sex'])
