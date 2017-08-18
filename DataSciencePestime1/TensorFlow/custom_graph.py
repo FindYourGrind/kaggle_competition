@@ -21,7 +21,7 @@ tf_data_y = tf.placeholder(tf.float32, shape=(packetSize,)) # узел на ко
 
 weight = tf.Variable(initial_value=0.1, dtype=tf.float32, name="a")
 bias = tf.Variable(initial_value=0.0, dtype=tf.float32, name="b")
-model = tf.add(tf.multiply(tf_data_x, weight), bias)
+model = tf.nn.sigmoid( tf.add(tf.multiply(tf_data_x, weight), bias)) # Sigmoid 1/(1 - e^(x))
 
 loss = tf.reduce_mean(tf.square(model-tf_data_y)) # функция потерь, о ней ниже
 optimizer = tf.train.GradientDescentOptimizer(0.5).minimize(loss) # метод оптимизации, о нём тоже ниже
