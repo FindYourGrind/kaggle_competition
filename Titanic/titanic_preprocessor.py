@@ -35,13 +35,16 @@ def preprocessing(data):
     processed_data.loc[:, 'FamilySize'] = processed_data['SibSp'] + processed_data['Parch'] + 1
     processed_data.loc[:, 'IsAlone'] = 0
     processed_data.loc[processed_data['FamilySize'] == 1, 'IsAlone'] = 1
-    processed_data = processed_data.drop(['Parch', 'SibSp', 'FamilySize'], axis=1)
+
+    processed_data.loc[:, 'FamilySizeD'] = 0
+    processed_data.loc[processed_data['FamilySize'] > 1, 'FamilySizeD'] = 1
+    processed_data.loc[processed_data['FamilySize'] > 4, 'FamilySizeD'] = 2
+
+    processed_data = processed_data.drop(['FamilySize', 'PassengerId'], axis=1)
 
     freq_port = processed_data.Embarked.dropna().mode()[0]
     processed_data.loc[:, 'Embarked'] = processed_data['Embarked'].fillna(freq_port)
     processed_data.loc[:, 'Embarked'] = processed_data['Embarked'].map({'S': 0, 'C': 1, 'Q': 2}).astype(int)
-
-    processed_data = processed_data.drop(['Ticket', 'Cabin'], axis=1)
 
     def dummy_data(data, columns):
         for column in columns:
@@ -49,7 +52,7 @@ def preprocessing(data):
             data = data.drop(column, axis=1)
         return data
 
-    processed_data = dummy_data(processed_data, ["Pclass"])
+    processed_data = dummy_data(processed_data, ["Pclass", 'Embarked', 'Cabin', 'FamilySizeD', 'Title'])
 
     def sex_to_int(data):
         le = LabelEncoder()
@@ -64,7 +67,7 @@ def preprocessing(data):
         data.loc[:, "Age"] = scaler.fit_transform(data["Age"].values.reshape(-1, 1))
         return data
 
-    processed_data = normalize_age(processed_data)
+    #processed_data = normalize_age(processed_data)
 
     return processed_data
 
