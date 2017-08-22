@@ -29,7 +29,7 @@ all_data.Cabin.replace(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'T', 'U'], [0, 0, 0, 
 all_data = tp.preprocessing(all_data)
 to_predict = all_data[survived_data.shape[0]:]
 
-train_x, test_x, train_y, test_y = train_test_split(all_data[0:survived_data.shape[0]], survived_data, test_size=0.3)
+train_x, test_x, train_y, test_y = train_test_split(all_data[0:survived_data.shape[0]], survived_data, test_size=0.4)
 
 ensemble = Ensemble(train_x, train_y, test_x)
 # ensemble.add_predictor(Predictor("SVC"))
@@ -50,17 +50,15 @@ print(ensemble.predict_test())
 # prediction_test = ensemble.predict2(test_x)
 
 # gbm = xgb.XGBClassifier(
-#     # learning_rate = 0.02,
+#     learning_rate=0.001,
 #     n_estimators=2000,
-#     max_depth=4,
-#     min_child_weight=2,
+#     max_depth=12,
+#     min_child_weight=0.5,
 #     # gamma=1,
 #     gamma=0.9,
 #     subsample=0.8,
 #     colsample_bytree=0.8,
-#     objective='binary:logistic',
-#     nthread=-1,
-#     scale_pos_weight=1).fit(prediction_train, train_y)
-# gbm_prediction = gbm.predict(prediction_test)
-#
-# print(mean_absolute_error(test_y, gbm_prediction))
+#     objective='reg:logistic',
+#     n_jobs=-1,
+#     scale_pos_weight=1).fit(train_x, train_y)
+
