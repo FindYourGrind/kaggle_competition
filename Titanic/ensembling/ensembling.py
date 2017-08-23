@@ -41,6 +41,7 @@ ensemble = Ensemble(train_x, train_y, test_x)
 ensemble.add_predictor(Predictor("XGBClassifier"))
 
 ensemble.find_best_parameters()
+ensemble.save_best_parameters()
 ensemble.calculate_weights()
 ensemble.threshold = 0.9
 
