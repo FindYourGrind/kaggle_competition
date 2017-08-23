@@ -6,8 +6,8 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 import numpy as np
 import matplotlib.pyplot as plt
-from Titanic.ensembling.Ensemble.index import Ensemble
-from Titanic.ensembling.Predictor.index import Predictor
+from Ensemble.Ensemble import Ensemble
+from Ensemble.Predictor import Predictor
 import xgboost as xgb
 
 test = False
@@ -32,34 +32,22 @@ to_predict = all_data[survived_data.shape[0]:]
 train_x, test_x, train_y, test_y = train_test_split(all_data[0:survived_data.shape[0]], survived_data, test_size=0.4)
 
 ensemble = Ensemble(train_x, train_y, test_x)
-# ensemble.add_predictor(Predictor("SVC"))
+
+# ensemble.add_predictor(Predictor("DecisionTreeRegressor"))
 # ensemble.add_predictor(Predictor("LogisticRegression"))
+# ensemble.add_predictor(Predictor("SVC"))
+# ensemble.add_predictor(Predictor("K-NN"))
+ensemble.add_predictor(Predictor("GaussianNB"))
 # ensemble.add_predictor(Predictor("RandomForestClassifier"))
+# ensemble.add_predictor(Predictor("Perceptron"))
+# ensemble.add_predictor(Predictor("LinearSVC"))
+# ensemble.add_predictor(Predictor("SGDClassifier"))
+# ensemble.add_predictor(Predictor("SVR"))
 # ensemble.add_predictor(Predictor("AdaBoostClassifier"))
 # ensemble.add_predictor(Predictor("GradientBoostingClassifier"))
 # ensemble.add_predictor(Predictor("ExtraTreesClassifier"))
-ensemble.add_predictor(Predictor("XGBClassifier"))
+# ensemble.add_predictor(Predictor("XGBClassifier"))
 
 ensemble.find_best_parameters()
-ensemble.save_best_parameters()
-ensemble.calculate_weights()
-ensemble.threshold = 0.9
-
-print(ensemble.predict_test())
-
-# prediction_train = ensemble.predict2(train_x)
-# prediction_test = ensemble.predict2(test_x)
-
-# gbm = xgb.XGBClassifier(
-#     learning_rate=0.001,
-#     n_estimators=2000,
-#     max_depth=12,
-#     min_child_weight=0.5,
-#     # gamma=1,
-#     gamma=0.9,
-#     subsample=0.8,
-#     colsample_bytree=0.8,
-#     objective='reg:logistic',
-#     n_jobs=-1,
-#     scale_pos_weight=1).fit(train_x, train_y)
+ensemble.save_best_parameters('./best_parameters')
 

@@ -1,6 +1,5 @@
 from sklearn.model_selection import GridSearchCV
-
-from Titanic.ensembling.PredictorModel.index import PredictorModel
+from Ensemble.PredictorModel import PredictorModel
 
 
 class Predictor:

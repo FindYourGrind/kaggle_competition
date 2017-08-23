@@ -38,28 +38,15 @@ class Ensemble:
         for predictor in self.predictors:
             print(predictor.name, ': ', predictor.best_accuracy)
 
-    def save_best_parameters(self, name, path):
+    def save_best_parameters(self, path):
         for predictor in self.predictors:
-            with open(os.path.join(path, name + '_best_parameters.json', 'w+')) as json_file:
-                json.dump(predictor.best_parameters, json_file)
+            with open(os.path.join(path, predictor.name + '_best_parameters.json'), 'w+') as j_file:
+                json.dump({"best_accuracy": predictor.best_accuracy, "best_params": predictor.best_parameters}, j_file)
 
     def fit_ensemble(self):
         for predictor in self.predictors:
             predictor.fitted_model = predictor.model(**predictor.best_parameters)
             predictor.fitted_model.fit(self.train_data, self.teacher_data)
-
-    def predict_test(self):
-        train_x, test_x, train_y, test_y = train_test_split(self.train_data, self.teacher_data, test_size=0.2)
-        prediction = np.zeros(test_x.shape[0], np.uint32)
-
-        for predictor in self.predictors:
-            model = predictor.model(**predictor.best_parameters)
-            model.fit(train_x, train_y)
-            prediction = np.add(prediction, model.predict(test_x) * predictor.weight)
-
-        result = np.asarray(list(map(lambda x: 1 if x > self.threshold else 0, prediction)))
-
-        return mean_absolute_error(test_y, result)
 
     def predict(self):
         prediction = np.zeros(self.test_data.shape[0], np.uint32)
@@ -69,7 +56,7 @@ class Ensemble:
         for predictor in self.predictors:
             prediction = np.add(prediction, predictor.fitted_model.predict(self.test_data) * predictor.weight)
 
-        return np.asarray(list(map(lambda x: 1 if x > self.threshold else 0, prediction)))
+        return prediction
 
     def predict2(self, data):
         predictions = []
