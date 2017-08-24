@@ -67,7 +67,14 @@ def preprocessing(data):
         data.loc[:, "Age"] = scaler.fit_transform(data["Age"].values.reshape(-1, 1))
         return data
 
-    #processed_data = normalize_age(processed_data)
+    processed_data = normalize_age(processed_data)
+
+    def normalize_fare(data):
+        scaler = MinMaxScaler()
+        data.loc[:, "Fare"] = scaler.fit_transform(data["Fare"].values.reshape(-1, 1))
+        return data
+
+    processed_data = normalize_fare(processed_data)
 
     return processed_data
 

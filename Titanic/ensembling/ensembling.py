@@ -1,3 +1,5 @@
+import traceback
+
 import age_prediction as ap
 import cabin_prediction as cp
 import titanic_preprocessor as tp
@@ -5,10 +7,11 @@ import pandas as pd
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 import numpy as np
-import matplotlib.pyplot as plt
 from Ensemble.Ensemble import Ensemble
 from Ensemble.Predictor import Predictor
 import xgboost as xgb
+import sys
+
 
 test = False
 
@@ -31,23 +34,29 @@ to_predict = all_data[survived_data.shape[0]:]
 
 train_x, test_x, train_y, test_y = train_test_split(all_data[0:survived_data.shape[0]], survived_data, test_size=0.4)
 
-ensemble = Ensemble(train_x, train_y, test_x)
 
-# ensemble.add_predictor(Predictor("DecisionTreeRegressor"))
-# ensemble.add_predictor(Predictor("LogisticRegression"))
-# ensemble.add_predictor(Predictor("SVC"))
-# ensemble.add_predictor(Predictor("K-NN"))
-ensemble.add_predictor(Predictor("GaussianNB"))
-# ensemble.add_predictor(Predictor("RandomForestClassifier"))
-# ensemble.add_predictor(Predictor("Perceptron"))
-# ensemble.add_predictor(Predictor("LinearSVC"))
-# ensemble.add_predictor(Predictor("SGDClassifier"))
-# ensemble.add_predictor(Predictor("SVR"))
-# ensemble.add_predictor(Predictor("AdaBoostClassifier"))
-# ensemble.add_predictor(Predictor("GradientBoostingClassifier"))
-# ensemble.add_predictor(Predictor("ExtraTreesClassifier"))
-# ensemble.add_predictor(Predictor("XGBClassifier"))
+with open('error.log', 'w+') as err_log:
+    try:
+        ensemble = Ensemble(train_x, train_y, test_x)
 
-ensemble.find_best_parameters()
-ensemble.save_best_parameters('./best_parameters')
+        # ensemble.add_predictor(Predictor("DecisionTreeRegressor"))
+        # ensemble.add_predictor(Predictor("SVR"))
 
+        ensemble.add_predictor(Predictor("SVC"))
+        ensemble.add_predictor(Predictor("LogisticRegression"))
+        ensemble.add_predictor(Predictor("K-NN"))
+        ensemble.add_predictor(Predictor("GaussianNB"))
+        ensemble.add_predictor(Predictor("RandomForestClassifier"))
+        ensemble.add_predictor(Predictor("Perceptron"))
+        ensemble.add_predictor(Predictor("LinearSVC"))
+        ensemble.add_predictor(Predictor("SGDClassifier"))
+        ensemble.add_predictor(Predictor("AdaBoostClassifier"))
+        ensemble.add_predictor(Predictor("GradientBoostingClassifier"))
+        ensemble.add_predictor(Predictor("ExtraTreesClassifier"))
+        ensemble.add_predictor(Predictor("XGBClassifier"))
+
+        ensemble.find_best_parameters()
+        ensemble.save_best_parameters('./best_parameters')
+    except Exception as err:
+        traceback.print_tb(err.__traceback__, file=err_log)
+        raise

@@ -3,7 +3,7 @@
     "criterion": ["mse", "mae"],
     "splitter": ["best", "random"],
     "min_samples_split": [2, 3, 4, 5, 6],
-    "max_leaf_nodes": [null, 25, 50, 100, 200, 500, 1000, 2000, 5000],
+    "max_leaf_nodes": [null, 25, 50, 100, 200, 500, 1000, 2000],
     "max_features": [1, 3, 5, 10, 15, "auto", "sqrt", "log2", null],
     "max_depth": [null, 1, 2, 3, 4, 5, 6, 7, 8],
     "min_samples_leaf": [1, 2, 4, 6, 8, 10, 12]
@@ -15,28 +15,26 @@
     "min_samples_split": [2, 3, 4, 5, 6],
     "min_samples_leaf": [1, 2, 4, 6, 8, 10, 12],
     "max_features": [1, 3, 5, 10, 15, "auto", "sqrt", "log2", null],
-    "max_leaf_nodes": [null, 25, 50, 100, 200, 500, 1000, 2000, 5000]
+    "max_leaf_nodes": [null, 25, 50, 100, 200, 500, 1000, 2000]
   },
   "LogisticRegression": {
     "C": [0.2, 0.5, 1, 3, 5],
     "tol": [0.0001, 0.001],
     "fit_intercept": [true, false],
     "solver": ["newton-cg", "lbfgs", "liblinear", "sag"],
-    "max_iter": [100, 200, 500, 1000, 2000, 5000]
+    "max_iter": [1000, 2000]
   },
   "SVC": {
     "kernel": ["linear", "poly", "rbf", "sigmoid"],
     "C": [0.2, 0.5, 1, 3, 5],
     "degree": [1, 3, 5, 7, 9],
-    "gamma": ["auto", 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.3, 1.7, 2],
-    "max_iter": [100, 200, 500, 1000, 2000, 5000]
+    "gamma": ["auto", 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.3, 1.7, 2]
   },
   "K-NN": {
     "n_neighbors": [2, 3, 5, 10],
     "weights": ["uniform", "distance"],
     "algorithm": ["auto", "ball_tree", "kd_tree", "brute"],
-    "leaf_size": [5, 15, 30, 45],
-    "coef0": [0, 0.1, 0.3, 0.5, 1, 3, 5]
+    "leaf_size": [5, 15, 30, 45]
   },
   "GaussianNB": {
     "priors": [null]
@@ -47,7 +45,7 @@
     "max_features": [1, 3, 5, 10, 15, "auto", "sqrt", "log2", null],
     "min_samples_split": [2, 3, 4, 5, 6],
     "min_samples_leaf": [1, 2, 4, 6, 8, 10, 12],
-    "max_leaf_nodes": [null, 25, 50, 100, 200, 500, 1000, 2000, 5000],
+    "max_leaf_nodes": [null, 25, 50, 100, 200, 500, 1000, 2000],
     "bootstrap": [true, false]
   },
   "Perceptron": {
@@ -78,22 +76,22 @@
     "epsilon": [0.05, 0.1, 0.2, 0.5]
   },
   "AdaBoostClassifier": {
-    "n_estimators": [25, 50, 100, 200, 500, 1000, 2000, 5000],
+    "n_estimators": [25, 50, 100, 200, 500, 1000, 2000],
     "algorithm": ["SAMME", "SAMME.R"]
   },
   "GradientBoostingClassifier": {
     "loss": ["deviance", "exponential"],
-    "n_estimators": [50, 100, 200, 400, 1000, 2000, 5000],
+    "n_estimators": [50, 100, 200, 400, 1000, 2000],
     "max_depth": [3, 5, 7, 9, 11],
     "criterion": ["friedman_mse", "mse", "mae"]
   },
   "ExtraTreesClassifier": {
-    "n_estimators": [10, 20, 40, 100, 200, 500, 1000, 5000],
+    "n_estimators": [10, 20, 40, 100, 200, 500, 1000, 2000],
     "criterion": ["gini", "entropy"]
   },
   "XGBClassifier": {
     "learning_rate": [0.0001, 0.001, 0.01],
-    "n_estimators": [1000, 2000, 4000],
+    "n_estimators": [1000, 2000],
     "max_depth": [1, 3, 5, 7, 9, 11, 13, 15],
     "min_child_weight": [0.2, 0.4, 0.8, 1, 1.4, 1.8, 2],
     "gamma": [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.3, 1.7, 2],
