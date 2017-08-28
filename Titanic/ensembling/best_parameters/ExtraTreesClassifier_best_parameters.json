@@ -1,0 +1,1 @@
+{"best_accuracy": 0.8220973782771536, "best_params": {"criterion": "entropy", "n_estimators": 20}}

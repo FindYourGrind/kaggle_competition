@@ -1,0 +1,1 @@
+{"best_params": {"multi_class": "ovr", "tol": 0.0001, "loss": "hinge", "C": 0.2}, "best_accuracy": 0.8108614232209738}

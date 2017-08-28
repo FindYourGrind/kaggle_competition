@@ -1,0 +1,4 @@
+PassengerId,Pclass,Name,Sex,Age,SibSp,Parch,Ticket,Fare,Cabin,Embarked
+1310,2,"Andrey Prosov",male,42,1,0,A/5 21171,7.25,,S
+1311,2,"Alexandr Simachkov",male,29,1,0,A/5 21171,7.25,,S
+1312,3,"Ihor Trambovetskyi",male,12,1,0,A/5 21171,7.25,,S
